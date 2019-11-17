@@ -1,0 +1,42 @@
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  thead {
+    border-bottom: 1px solid #eee;
+  }
+  tr:nth-of-type(even) {
+    background: #eee;
+  }
+  td,
+  th {
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .field-id {
+    width: 1em;
+  }
+  .field-avatar {
+    width: 1em;
+    img {
+      max-width: 64px;
+      border-radius: 5px;
+    }
+  }
+  .field-actions {
+    button {
+      width: 80px;
+      height: 40px;
+      border-radius: 5px;
+      font-weight: 500;
+      color: #fff;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+    &__update {
+      background-color: var(--secondary-color);
+    }
+    &__delete {
+      background-color: var(--danger-color);
+    }
+  }
+}
