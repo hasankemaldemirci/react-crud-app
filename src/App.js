@@ -21,13 +21,13 @@ import Modal from "./components/Modal";
 import Search from "./components/Search";
 import Pagination from "./components/Pagination";
 import Loader from "./components/Loader";
+import MySwal from "./index";
 
 function App() {
   const dispatch = useDispatch();
   const users = useSelector(state => state.users);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
 
   const [currentUser, setCurrentUser] = useState({
     id: null,
@@ -119,11 +119,19 @@ function App() {
     try {
       await getCreatedUser(user).then(res => {
         const result = res.data;
-        dispatch({ type: "CREATE_USER", data: result });
-        setSavedUsers([...users, result]);
+        MySwal.fire({
+          icon: "success",
+          title: "User created successfully."
+        }).then(() => {
+          dispatch({ type: "CREATE_USER", data: result });
+          setSavedUsers([...users, result]);
+        });
       });
     } catch (err) {
-      console.log(err);
+      MySwal.fire({
+        icon: "error",
+        title: "Failed to create user."
+      });
     } finally {
       setLoading(false);
     }
@@ -149,15 +157,23 @@ function App() {
     try {
       await getUpdatedUser(id, updatedUser).then(res => {
         const result = res.data;
-        dispatch({
-          type: "SET_USERS",
-          data: users.map(user =>
-            user.id === id ? Object.assign(user, result) : user
-          )
+        MySwal.fire({
+          icon: "success",
+          title: "User updated successfully."
+        }).then(() => {
+          dispatch({
+            type: "SET_USERS",
+            data: users.map(user =>
+              user.id === id ? Object.assign(user, result) : user
+            )
+          });
         });
       });
     } catch (err) {
-      console.log(err);
+      MySwal.fire({
+        icon: "error",
+        title: "Failed to update user."
+      });
     } finally {
       setLoading(false);
     }
@@ -182,14 +198,22 @@ function App() {
 
     try {
       await getDeletedUser(id).then(() => {
-        dispatch({
-          type: "SET_USERS",
-          data: users.filter(user => user.id !== id)
+        MySwal.fire({
+          icon: "success",
+          title: "User deleted successfully."
+        }).then(() => {
+          dispatch({
+            type: "SET_USERS",
+            data: users.filter(user => user.id !== id)
+          });
+          setSavedUsers(savedUsers.filter(user => user.id !== id));
         });
-        setSavedUsers(savedUsers.filter(user => user.id !== id));
       });
     } catch (err) {
-      console.log(err);
+      MySwal.fire({
+        icon: "error",
+        title: "Failed to delete user."
+      });
     } finally {
       setLoading(false);
     }
@@ -205,7 +229,10 @@ function App() {
         dispatch({ type: "SET_USERS", data: data.data });
       });
     } catch (err) {
-      setError(err);
+      MySwal.fire({
+        icon: "error",
+        title: "Failed to fetch users."
+      });
     } finally {
       setTimeout(() => {
         setLoading(false);
@@ -222,7 +249,6 @@ function App() {
       <Header />
       <main className="content">
         <div className="container">
-          {error && <div className="api-error"></div>}
           {loading ? (
             <Loader />
           ) : (
