@@ -23,7 +23,13 @@ const Search = props => {
   const handleSubmit = event => {
     event.preventDefault();
     setSearchTerm("");
-    setToggleReset(true);
+
+    if (searchTerm.length > 2) {
+      setToggleReset(true);
+    } else {
+      setToggleReset(false);
+    }
+
     props.search(searchTerm);
   };
 
