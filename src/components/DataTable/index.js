@@ -7,7 +7,7 @@ import "./style.scss";
 import PlaceholderImg from "../../img/placeholder-user.jpg";
 import SortIcon from "../../img/sort-icon.png";
 
-function DataTable(props) {
+const DataTable = props => {
   return (
     <table className="data-table">
       <thead>
@@ -16,8 +16,7 @@ function DataTable(props) {
           <th
             onClick={() => {
               props.onSortChange("name");
-            }}
-          >
+            }}>
             <span className="column-sort">
               First Name
               <img src={SortIcon} alt="First Name" />
@@ -26,8 +25,7 @@ function DataTable(props) {
           <th
             onClick={() => {
               props.onSortChange("surname");
-            }}
-          >
+            }}>
             <span className="column-sort">
               Last Name
               <img src={SortIcon} alt="Last Name" />
@@ -36,8 +34,7 @@ function DataTable(props) {
           <th
             onClick={() => {
               props.onSortChange("email");
-            }}
-          >
+            }}>
             <span className="column-sort">
               E-Mail
               <img src={SortIcon} alt="E-Mail" />
@@ -47,7 +44,7 @@ function DataTable(props) {
         </tr>
       </thead>
       <tbody>
-        {props.users &&
+        {props.users.length ? (
           props.users.map(user => (
             <tr key={user.id}>
               <td className="field-avatar">
@@ -64,22 +61,27 @@ function DataTable(props) {
                   className="field-actions__update"
                   onClick={() => {
                     props.updateRow(user);
-                  }}
-                >
+                  }}>
                   Update
                 </button>
                 <button
                   className="field-actions__delete"
-                  onClick={() => props.deleteRow(user)}
-                >
+                  onClick={() => props.deleteRow(user)}>
                   Delete
                 </button>
               </td>
             </tr>
-          ))}
+          ))
+        ) : (
+          <tr>
+            <td colSpan="5">
+              <div className="no-record-message">No Record!</div>
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
-}
+};
 
 export default DataTable;

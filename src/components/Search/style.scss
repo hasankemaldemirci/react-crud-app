@@ -1,5 +1,27 @@
 .search-form {
+  display: flex;
+  align-items: center;
   .primary-btn {
-    margin-left: 5px;
+    margin-left: 10px;
+  }
+  .reset-search-btn {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    strong {
+      width: 20px;
+      height: 20px;
+      margin-left: 5px;
+      background: var(--secondary-color);
+      border-radius: 3px;
+      font-size: 14px;
+      text-align: center;
+      line-height: 20px;
+      color: #fff;
+    }
   }
 }

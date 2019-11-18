@@ -8,7 +8,7 @@ function getUsers() {
   return response;
 }
 
-function postUser({ first_name, last_name, email }) {
+function getCreatedUser({ first_name, last_name, email }) {
   const response = axios.post(`${apiURL}/users`, {
     email,
     first_name,
@@ -18,7 +18,7 @@ function postUser({ first_name, last_name, email }) {
   return response;
 }
 
-function patchUser(id, user) {
+function getUpdatedUser(id, user) {
   const response = axios.patch(`${apiURL}/users/${id}`, {
     avatar: user.avatar,
     id: id,
@@ -30,4 +30,10 @@ function patchUser(id, user) {
   return response;
 }
 
-export { getUsers, postUser, patchUser };
+function getDeletedUser(id) {
+  const response = axios.delete(`${apiURL}/users/${id}`);
+
+  return response;
+}
+
+export { getUsers, getCreatedUser, getUpdatedUser, getDeletedUser };

@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getUsers, postUser, patchUser } from "./app/api";
+import {
+  getUsers,
+  getCreatedUser,
+  getUpdatedUser,
+  getDeletedUser
+} from "./app/api";
 
 // Styles
 import "./app.scss";
@@ -21,17 +26,16 @@ function App() {
   const dispatch = useDispatch();
   const users = useSelector(state => state.users);
 
-  const initialUser = {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const [currentUser, setCurrentUser] = useState({
     id: null,
     avatar: null,
     first_name: "",
     last_name: "",
     email: ""
-  };
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [currentUser, setCurrentUser] = useState(initialUser);
+  });
   const [showModal, setShowModal] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [savedUsers, setSavedUsers] = useState(users);
@@ -39,92 +43,18 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sorted, setSorted] = useState(false);
 
-  // CRUD Operations
-  const createUser = async user => {
-    setLoading(true);
-
-    try {
-      await postUser(user).then(res => {
-        const user = res.data;
-        dispatch({ type: "CREATE_USER", data: user });
-        setSavedUsers([...users, user]);
-      });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateRow = user => {
-    setModal("update");
-
-    setCurrentUser({
-      id: user.id,
-      avatar: user.avatar,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email
-    });
-  };
-
-  const updateUser = async (id, updatedUser) => {
-    setShowModal(false);
-    setLoading(true);
-
-    try {
-      await patchUser(id, updatedUser).then(res => {
-        const editedUser = res.data;
-        dispatch({
-          type: "SET_USERS",
-          data: users.map(user =>
-            user.id === id ? Object.assign(user, editedUser) : user
-          )
-        });
-      });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteRow = user => {
-    setModal("delete");
-
-    setCurrentUser({
-      id: user.id,
-      avatar: user.avatar,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email
-    });
-  };
-
-  const deleteUser = id => {
-    setShowModal(false);
-
-    setSavedUsers(savedUsers.filter(user => user.id !== id));
-
-    dispatch({
-      type: "DELETE_USER",
-      data: users.filter(user => user.id !== id)
-    });
-  };
+  const lastIndex = currentPage * pageSize;
+  const firstIndex = lastIndex - pageSize;
+  const currentUsers = users.slice(firstIndex, lastIndex);
 
   // Setting up Modal
   const setModal = modal => {
     search("");
-    document.getElementById("search-input").value = "";
     setShowModal(true);
     setActiveModal(modal);
   };
 
-  // Pagination
-  const lastIndex = currentPage * 5;
-  const firstIndex = lastIndex - 5;
-  const currentUsers = users.slice(firstIndex, lastIndex);
-
+  // Pagination // TODO: Refactor
   const paginate = page => {
     setCurrentPage(page);
   };
@@ -132,7 +62,9 @@ function App() {
   // Search
   const search = term => {
     if (term.length > 2) {
-      const results = users.filter(user =>
+      setCurrentPage(1);
+
+      const results = savedUsers.filter(user =>
         Object.keys(user).some(key =>
           user[key]
             .toString()
@@ -140,8 +72,6 @@ function App() {
             .includes(term.toString().toLowerCase())
         )
       );
-
-      paginate(1);
 
       dispatch({ type: "SET_USERS", data: results });
     } else if (!term.length) {
@@ -182,7 +112,90 @@ function App() {
     }
   };
 
-  // Data Fetching from API
+  // Create User
+  const createUser = async user => {
+    setLoading(true);
+
+    try {
+      await getCreatedUser(user).then(res => {
+        const result = res.data;
+        dispatch({ type: "CREATE_USER", data: result });
+        setSavedUsers([...users, result]);
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update User
+  const updateRow = user => {
+    setModal("update");
+
+    setCurrentUser({
+      id: user.id,
+      avatar: user.avatar,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email
+    });
+  };
+
+  const updateUser = async (id, updatedUser) => {
+    setShowModal(false);
+    setLoading(true);
+
+    try {
+      await getUpdatedUser(id, updatedUser).then(res => {
+        const result = res.data;
+        dispatch({
+          type: "SET_USERS",
+          data: users.map(user =>
+            user.id === id ? Object.assign(user, result) : user
+          )
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete User
+  const deleteRow = user => {
+    setModal("delete");
+
+    setCurrentUser({
+      id: user.id,
+      avatar: user.avatar,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email
+    });
+  };
+
+  const deleteUser = async id => {
+    setShowModal(false);
+    setLoading(true);
+
+    try {
+      await getDeletedUser(id).then(() => {
+        dispatch({
+          type: "SET_USERS",
+          data: users.filter(user => user.id !== id)
+        });
+        setSavedUsers(savedUsers.filter(user => user.id !== id));
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch Users
   const fetchUsers = async () => {
     setLoading(true);
 
@@ -215,11 +228,10 @@ function App() {
           ) : (
             <div className="content-wrapper">
               <div className="toolbar">
-                <Search search={search} />
+                <Search search={search} resetSearch={search} />
                 <button
                   className="primary-btn create-user-btn"
-                  onClick={() => setModal("create")}
-                >
+                  onClick={() => setModal("create")}>
                   Create New User
                 </button>
               </div>
@@ -251,8 +263,6 @@ function App() {
                 users={currentUsers}
                 updateRow={updateRow}
                 deleteRow={deleteRow}
-                currentPage={currentPage}
-                pageSize={pageSize}
                 onSortChange={sorting}
               />
               <Pagination

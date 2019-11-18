@@ -5,6 +5,7 @@ import "./style.scss";
 
 const Search = props => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [toggleReset, setToggleReset] = useState(false);
 
   const onInputChange = event => {
     const value = event.target.value;
@@ -14,17 +15,38 @@ const Search = props => {
     }
   };
 
+  const handleSearchReset = () => {
+    setToggleReset(false);
+    props.resetSearch("");
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    setSearchTerm("");
+    setToggleReset(true);
+    props.search(searchTerm);
+  };
+
   return (
     <form
       className="search-form"
       onSubmit={event => {
-        event.preventDefault();
-        props.search(searchTerm);
+        handleSubmit(event);
       }}>
       <div className="form-group">
-        <input id="search-input" type="text" placeholder="Search" onChange={onInputChange} />
+        <input
+          type="text"
+          placeholder="Search"
+          onChange={onInputChange}
+          value={searchTerm}
+        />
         <button className="primary-btn">Search</button>
       </div>
+      {toggleReset && (
+        <span className="reset-search-btn" onClick={handleSearchReset}>
+          Reset Search <strong>X</strong>
+        </span>
+      )}
     </form>
   );
 };

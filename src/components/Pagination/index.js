@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 // Styles
 import "./style.scss";
 
-function Pagination({ totalResults, currentPage, paginate, pageSize }) {
+const Pagination = ({ totalResults, currentPage, paginate, pageSize }) => {
   const [pageNumbers, setPageNumbers] = useState([]);
 
   // Set Page Numbers

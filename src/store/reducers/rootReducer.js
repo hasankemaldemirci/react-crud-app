@@ -8,8 +8,6 @@ const rootReducer = (state = initialState, action) => {
       return { ...state, users: action.data };
     case "CREATE_USER":
       return { ...state, users: [...state.users, action.data] };
-    case "DELETE_USER":
-      return { ...state, users: action.data };
     default:
       return state;
   }
