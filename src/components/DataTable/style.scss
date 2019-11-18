@@ -12,6 +12,15 @@
     padding: 8px 10px;
     text-align: left;
   }
+  .column-sort {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    img {
+      max-width: 12px;
+    }
+  }
   .field-id {
     width: 1em;
   }

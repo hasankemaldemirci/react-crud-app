@@ -7,7 +7,7 @@ function Header() {
   return (
     <header className="header">
       <div className="container">
-        <a href="/">React CRUD App</a>
+        <a href="/" className="logo">React CRUD App</a>
       </div>
     </header>
   );

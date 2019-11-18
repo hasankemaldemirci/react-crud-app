@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getUsers } from "./app/api";
+import { getUsers, postUser, patchUser } from "./app/api";
 
 // Styles
 import "./app.scss";
@@ -15,6 +15,7 @@ import DeleteUser from "./components/DeleteUser";
 import Modal from "./components/Modal";
 import Search from "./components/Search";
 import Pagination from "./components/Pagination";
+import Loader from "./components/Loader";
 
 function App() {
   const dispatch = useDispatch();
@@ -36,12 +37,23 @@ function App() {
   const [savedUsers, setSavedUsers] = useState(users);
   const [pageSize] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sorted, setSorted] = useState(false);
 
-  // Operations
-  const createUser = user => {
-    user.id = users.length + 1;
-    dispatch({ type: "CREATE_USER", data: user });
-    setSavedUsers([...users, user]);
+  // CRUD Operations
+  const createUser = async user => {
+    setLoading(true);
+
+    try {
+      await postUser(user).then(res => {
+        const user = res.data;
+        dispatch({ type: "CREATE_USER", data: user });
+        setSavedUsers([...users, user]);
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateRow = user => {
@@ -56,13 +68,25 @@ function App() {
     });
   };
 
-  const updateUser = (id, updatedUser) => {
+  const updateUser = async (id, updatedUser) => {
     setShowModal(false);
+    setLoading(true);
 
-    dispatch({
-      type: "UPDATE_USER",
-      data: users.map(user => (user.id === id ? updatedUser : user))
-    });
+    try {
+      await patchUser(id, updatedUser).then(res => {
+        const editedUser = res.data;
+        dispatch({
+          type: "SET_USERS",
+          data: users.map(user =>
+            user.id === id ? Object.assign(user, editedUser) : user
+          )
+        });
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteRow = user => {
@@ -108,7 +132,7 @@ function App() {
   // Search
   const search = term => {
     if (term.length > 2) {
-      const results = savedUsers.filter(user =>
+      const results = users.filter(user =>
         Object.keys(user).some(key =>
           user[key]
             .toString()
@@ -119,14 +143,47 @@ function App() {
 
       paginate(1);
 
-      dispatch({ type: "SEARCH", data: results });
+      dispatch({ type: "SET_USERS", data: results });
     } else if (!term.length) {
-      dispatch({ type: "SEARCH", data: savedUsers });
+      dispatch({ type: "SET_USERS", data: savedUsers });
+    }
+  };
+
+  // Sorting
+  const sorting = key => {
+    setSorted(!sorted);
+    switch (key) {
+      case "name":
+        const nameSort = [...savedUsers].sort((a, b) => {
+          return sorted
+            ? a.first_name.localeCompare(b.first_name, "tr")
+            : b.first_name.localeCompare(a.first_name, "tr");
+        });
+        dispatch({ type: "SET_USERS", data: nameSort });
+        return;
+      case "surname":
+        const surnameSort = [...savedUsers].sort((a, b) => {
+          return sorted
+            ? a.last_name.localeCompare(b.last_name, "tr")
+            : b.last_name.localeCompare(a.last_name, "tr");
+        });
+        dispatch({ type: "SET_USERS", data: surnameSort });
+        return;
+      case "email":
+        const emailSort = [...savedUsers].sort((a, b) => {
+          return sorted
+            ? a.email.localeCompare(b.email, "tr")
+            : b.email.localeCompare(a.email, "tr");
+        });
+        dispatch({ type: "SET_USERS", data: emailSort });
+        return;
+      default:
+        break;
     }
   };
 
   // Data Fetching from API
-  const fetchData = async () => {
+  const fetchUsers = async () => {
     setLoading(true);
 
     try {
@@ -144,63 +201,70 @@ function App() {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchUsers();
   }, []);
 
   return (
     <div className="app">
       <Header />
-      {!loading && (
-        <main className="content">
-          <div className="container">
-            <div className="toolbar">
-              <Search search={search} />
-              <button
-                className="primary-btn create-user-btn"
-                onClick={() => setModal("create")}>
-                Create New User
-              </button>
+      <main className="content">
+        <div className="container">
+          {error && <div className="api-error"></div>}
+          {loading ? (
+            <Loader />
+          ) : (
+            <div className="content-wrapper">
+              <div className="toolbar">
+                <Search search={search} />
+                <button
+                  className="primary-btn create-user-btn"
+                  onClick={() => setModal("create")}
+                >
+                  Create New User
+                </button>
+              </div>
+              {showModal && (
+                <Modal activeModal={activeModal}>
+                  {activeModal === "create" && (
+                    <CreateUser
+                      createUser={createUser}
+                      setShowModal={setShowModal}
+                    />
+                  )}
+                  {activeModal === "update" && (
+                    <UpdateUser
+                      currentUser={currentUser}
+                      updateUser={updateUser}
+                      setShowModal={setShowModal}
+                    />
+                  )}
+                  {activeModal === "delete" && (
+                    <DeleteUser
+                      currentUser={currentUser}
+                      deleteUser={deleteUser}
+                      setShowModal={setShowModal}
+                    />
+                  )}
+                </Modal>
+              )}
+              <DataTable
+                users={currentUsers}
+                updateRow={updateRow}
+                deleteRow={deleteRow}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                onSortChange={sorting}
+              />
+              <Pagination
+                totalResults={users.length}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                paginate={paginate}
+              />
             </div>
-            {showModal && (
-              <Modal activeModal={activeModal}>
-                {activeModal === "create" && (
-                  <CreateUser
-                    createUser={createUser}
-                    setShowModal={setShowModal}
-                  />
-                )}
-                {activeModal === "update" && (
-                  <UpdateUser
-                    currentUser={currentUser}
-                    updateUser={updateUser}
-                    setShowModal={setShowModal}
-                  />
-                )}
-                {activeModal === "delete" && (
-                  <DeleteUser
-                    currentUser={currentUser}
-                    deleteUser={deleteUser}
-                    setShowModal={setShowModal}
-                  />
-                )}
-              </Modal>
-            )}
-            <DataTable
-              users={currentUsers}
-              updateRow={updateRow}
-              deleteRow={deleteRow}
-              currentPage={currentPage}
-              pageSize={pageSize}
-            />
-            <Pagination
-              totalResults={users.length}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              paginate={paginate}
-            />
-          </div>
-        </main>
-      )}
+          )}
+        </div>
+      </main>
       <Footer />
     </div>
   );
