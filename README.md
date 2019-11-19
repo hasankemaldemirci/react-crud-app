@@ -1,6 +1,6 @@
 # React CRUD App Example
 
-> Lists User's existing playlists and tracks from Spotify.  
+> A CRUD application which edits user records in React. 
 Live Demo : https://react-crud-app.herokuapp.com
 
 ## Build Setup
