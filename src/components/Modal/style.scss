@@ -11,7 +11,7 @@
   z-index: 99;
   &-content {
     width: 90%;
-    max-width: 600px;
+    max-width: 500px;
     background-color: #fff;
     border-radius: 5px;
     padding: 30px;
@@ -25,6 +25,13 @@
     }
     input {
       width: 100%;
+    }
+  }
+  @media only screen and (max-width: 767px) {
+    &-content {
+      max-height: calc(100vh - 30px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
 }

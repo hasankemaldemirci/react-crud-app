@@ -146,4 +146,12 @@ input {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
+  @media only screen and (max-width: 480px) {
+    flex-direction: column-reverse;
+    > .primary-btn {
+      width: 100%;
+      margin-left: 0;
+      margin-bottom: 15px;
+    }
+  }
 }

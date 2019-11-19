@@ -9,11 +9,7 @@ const Modal = props => {
   return (
     <div className="modal">
       <div className="modal-content">
-        <div className="modal-content__title">
-          {activeModal === "create" && "Create User"}
-          {activeModal === "update" && "Update User"}
-          {activeModal === "delete" && "Delete User"}
-        </div>
+        <div className="modal-content__title">{activeModal.name}</div>
         <div className="modal-content__body">{children}</div>
       </div>
     </div>

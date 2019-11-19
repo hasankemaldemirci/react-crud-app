@@ -36,22 +36,20 @@ function App() {
     last_name: "",
     email: ""
   });
-  const [showModal, setShowModal] = useState(false);
-  const [activeModal, setActiveModal] = useState(null);
+  const [activeModal, setActiveModal] = useState({ name: "", active: false });
   const [savedUsers, setSavedUsers] = useState(users);
   const [pageSize] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorted, setSorted] = useState(false);
 
-  const lastIndex = currentPage * pageSize;
-  const firstIndex = lastIndex - pageSize;
-  const currentUsers = users.slice(firstIndex, lastIndex);
+  const usersLastIndex = currentPage * pageSize;
+  const usersFirstIndex = usersLastIndex - pageSize;
+  const currentUsers = users.slice(usersFirstIndex, usersLastIndex);
 
   // Setting up Modal
   const setModal = modal => {
     search("");
-    setShowModal(true);
-    setActiveModal(modal);
+    setActiveModal({ name: modal, active: true });
   };
 
   // Pagination
@@ -114,7 +112,7 @@ function App() {
 
   // Create User
   const createUser = async user => {
-    setShowModal(false);
+    setActiveModal(false);
     setLoading(true);
 
     try {
@@ -140,7 +138,7 @@ function App() {
 
   // Update User
   const updateRow = user => {
-    setModal("update");
+    setModal("Update User");
 
     setCurrentUser({
       id: user.id,
@@ -152,7 +150,7 @@ function App() {
   };
 
   const updateUser = async (id, updatedUser) => {
-    setShowModal(false);
+    setActiveModal(false);
     setLoading(true);
 
     try {
@@ -182,7 +180,7 @@ function App() {
 
   // Delete User
   const deleteRow = user => {
-    setModal("delete");
+    setModal("Delete User");
 
     setCurrentUser({
       id: user.id,
@@ -194,7 +192,7 @@ function App() {
   };
 
   const deleteUser = async id => {
-    setShowModal(false);
+    setActiveModal(false);
     setLoading(true);
 
     try {
@@ -208,6 +206,7 @@ function App() {
             data: users.filter(user => user.id !== id)
           });
           setSavedUsers(savedUsers.filter(user => user.id !== id));
+          setCurrentPage(1);
         });
       });
     } catch (err) {
@@ -258,34 +257,11 @@ function App() {
                 <Search search={search} resetSearch={search} />
                 <button
                   className="primary-btn"
-                  onClick={() => setModal("create")}>
+                  onClick={() => setModal("Create User")}
+                >
                   Create New User
                 </button>
               </div>
-              {showModal && (
-                <Modal activeModal={activeModal}>
-                  {activeModal === "create" && (
-                    <CreateUser
-                      createUser={createUser}
-                      setShowModal={setShowModal}
-                    />
-                  )}
-                  {activeModal === "update" && (
-                    <UpdateUser
-                      currentUser={currentUser}
-                      updateUser={updateUser}
-                      setShowModal={setShowModal}
-                    />
-                  )}
-                  {activeModal === "delete" && (
-                    <DeleteUser
-                      currentUser={currentUser}
-                      deleteUser={deleteUser}
-                      setShowModal={setShowModal}
-                    />
-                  )}
-                </Modal>
-              )}
               <DataTable
                 users={currentUsers}
                 updateRow={updateRow}
@@ -302,6 +278,30 @@ function App() {
           )}
         </div>
       </main>
+      {activeModal.active && (
+        <Modal activeModal={activeModal}>
+          {activeModal.name === "Create User" && (
+            <CreateUser
+              createUser={createUser}
+              setActiveModal={setActiveModal}
+            />
+          )}
+          {activeModal.name === "Update User" && (
+            <UpdateUser
+              currentUser={currentUser}
+              updateUser={updateUser}
+              setActiveModal={setActiveModal}
+            />
+          )}
+          {activeModal.name === "Delete User" && (
+            <DeleteUser
+              currentUser={currentUser}
+              deleteUser={deleteUser}
+              setActiveModal={setActiveModal}
+            />
+          )}
+        </Modal>
+      )}
       <Footer />
     </div>
   );

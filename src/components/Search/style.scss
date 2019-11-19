@@ -24,4 +24,18 @@
       color: #fff;
     }
   }
+  @media only screen and (max-width: 480px) {
+    flex-direction: column;
+    width: 100%;
+    .form-group {
+      display: flex;
+      width: 100%;
+      input {
+        flex-grow: 1;
+      }
+    }
+    .reset-search-btn {
+      margin-top: 10px;
+    }
+  }
 }

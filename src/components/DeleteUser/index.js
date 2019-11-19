@@ -5,7 +5,7 @@ const DeleteUser = props => {
 
   const cancel = event => {
     event.preventDefault();
-    props.setShowModal(false);
+    props.setActiveModal({ active: false });
   };
 
   useEffect(() => {

@@ -1,5 +1,11 @@
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .data-table {
   width: 100%;
+  min-width: 767px;
   border-collapse: collapse;
   thead {
     border-bottom: 1px solid #eee;
@@ -51,5 +57,10 @@
   .no-record-message {
     font-weight: 600;
     text-align: center;
+  }
+  @media only screen and (max-width: 767px) {
+    .no-record-message {
+      text-align: left;
+    }
   }
 }
