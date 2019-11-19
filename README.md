@@ -1,7 +1,7 @@
 # React CRUD App Example
 
 > A CRUD application which edits user records in React.  
-Live Demo : https://react-crud-app.herokuapp.com
+Live Demo : https://react-crud-app-example.herokuapp.com
 
 ## Build Setup
 
