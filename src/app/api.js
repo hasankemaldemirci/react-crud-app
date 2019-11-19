@@ -19,7 +19,7 @@ function getCreatedUser({ first_name, last_name, email }) {
 }
 
 function getUpdatedUser(id, user) {
-  const response = axios.patch(`${apiURL}/users/${id}`, {
+  const response = axios.put(`${apiURL}/users/${id}`, {
     avatar: user.avatar,
     id: id,
     email: user.email,

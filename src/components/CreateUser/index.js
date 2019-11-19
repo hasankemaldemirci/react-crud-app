@@ -10,15 +10,19 @@ const CreateUser = props => {
     setUser({ ...user, [name]: value });
   };
 
+  const cancel = event => {
+    event.preventDefault();
+    props.setShowModal(false);
+  };
+
   return (
     <form
       onSubmit={event => {
         event.preventDefault();
         if (!user.first_name || !user.last_name) return;
         props.createUser(user);
-        props.setShowModal(false);
-        setUser(initialData);
-      }}>
+      }}
+    >
       <div className="form-group">
         <label>First Name</label>
         <input
@@ -48,7 +52,7 @@ const CreateUser = props => {
       </div>
       <div className="form-group form-group--actions">
         <button className="primary-btn">Create</button>
-        <button className="cancel-btn" onClick={() => props.setShowModal(false)}>
+        <button className="cancel-btn" onClick={cancel}>
           Cancel
         </button>
       </div>

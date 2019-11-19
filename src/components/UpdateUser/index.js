@@ -9,6 +9,11 @@ const UpdateUser = props => {
     setUser({ ...user, [name]: value });
   };
 
+  const cancel = event => {
+    event.preventDefault();
+    props.setShowModal(false);
+  };
+
   useEffect(() => {
     setUser(props.currentUser);
   }, [props]);
@@ -18,7 +23,8 @@ const UpdateUser = props => {
       onSubmit={event => {
         event.preventDefault();
         props.updateUser(user.id, user);
-      }}>
+      }}
+    >
       <div className="form-group">
         <label>First Name</label>
         <input
@@ -48,7 +54,7 @@ const UpdateUser = props => {
       </div>
       <div className="form-group form-group--actions">
         <button className="primary-btn">Update</button>
-        <button className="cancel-btn" onClick={() => props.setShowModal(false)}>
+        <button className="cancel-btn" onClick={cancel}>
           Cancel
         </button>
       </div>

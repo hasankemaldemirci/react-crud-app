@@ -58,7 +58,7 @@ const DataTable = props => {
               <td>{user.email}</td>
               <td className="field-actions">
                 <button
-                  className="field-actions__update"
+                  className="primary-btn"
                   onClick={() => {
                     props.updateRow(user);
                   }}>

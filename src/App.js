@@ -54,7 +54,7 @@ function App() {
     setActiveModal(modal);
   };
 
-  // Pagination // TODO: Refactor
+  // Pagination
   const paginate = page => {
     setCurrentPage(page);
   };
@@ -114,6 +114,7 @@ function App() {
 
   // Create User
   const createUser = async user => {
+    setShowModal(false);
     setLoading(true);
 
     try {
@@ -256,7 +257,7 @@ function App() {
               <div className="toolbar">
                 <Search search={search} resetSearch={search} />
                 <button
-                  className="primary-btn create-user-btn"
+                  className="primary-btn"
                   onClick={() => setModal("create")}>
                   Create New User
                 </button>
