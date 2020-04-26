@@ -11,7 +11,7 @@
     "react-scripts": "3.2.0",
     "redux": "^4.0.4",
     "serve": "^11.2.0",
-    "sweetalert2": "^9.3.13",
+    "sweetalert2": "^9.10.12",
     "sweetalert2-react-content": "^2.0.2"
   },
   "scripts": {
