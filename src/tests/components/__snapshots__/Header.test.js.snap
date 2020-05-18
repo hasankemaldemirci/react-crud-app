@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should render Header correctly 1`] = `
+<header
+  className="header"
+>
+  <div
+    className="container"
+  >
+    <a
+      className="logo"
+      href="/"
+    >
+      React CRUD App
+    </a>
+  </div>
+</header>
+`;
